@@ -1,0 +1,12 @@
+{
+  "name": "Modnyi Lounge Bar Menu",
+  "short_name": "Modnyi Menu",
+  "start_url": "index.html",
+  "display": "standalone",
+  "background_color": "#faf7f2",
+  "theme_color": "#faf7f2",
+  "icons": [
+    { "src": "assets/icon-192x192.png", "type": "image/png", "sizes": "192x192", "purpose": "any maskable" },
+    { "src": "assets/icon-512x512.png", "type": "image/png", "sizes": "512x512", "purpose": "any maskable" }
+  ]
+}
