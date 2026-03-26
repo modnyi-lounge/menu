@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#faf7f2">
+    <link rel="apple-touch-icon" href="assets/icon-192x192.png">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="Modnyi Menu">
+    <title>Модный Lounge Bar</title>
+    <style>
+        :root { 
+            --primary: #d66a40;
+            --accent: #e0dacf;
+            --bg: #faf7f2;
+            --white: #ffffff;
+            --text: #4a3f35;
+            --nav-bg: #eee8de;
+            --radius: 18px; 
+            --inactive: #8c7f70;
+        }
+        html { scroll-behavior: smooth; }
+        body { font-family: -apple-system, system-ui, sans-serif; margin: 0; background: var(--bg); color: var(--text); }
+        
+        header { 
+            background: var(--bg); 
+            padding: 15px;
+            /* padding-bottom: 5px; */
+            padding-bottom: 0px;
+            text-align: center; 
+            font-weight: 800; 
+            font-size: 18px;
+        }
+        .header-logo {
+            width: 130px;
+        }
+
+        .sticky-header {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: var(--bg);
+            /* background: rgba(250, 247, 242, 0.97); */
+            /* backdrop-filter: blur(12px); Размытие в стиле iOS */
+            /* padding-top: 15px; */
+        }
+
+        .main-tabs {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin: 0 auto;
+            padding: 5px 0 0;
+            max-width: 320px;
+        }
+        .main-tab {
+            position: relative;
+            padding: 8px 13px;
+            border: none;
+            background: transparent;
+            font-weight: 600;
+            font-size: 16px;
+            color: var(--inactive);
+            cursor: pointer;
+            transition: color 0.3s ease;
+        }
+        .main-tab.active {
+            color: var(--primary);
+            background: transparent;
+            box-shadow: none;
+        }
+        /* .main-tab.active::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background-color: var(--primary);
+            border-radius: 2px;
+        } */
+        
+        .nav-scroller {
+            display: flex;
+            overflow-x: auto;
+            padding: 5px 10px 12px;
+            gap: 10px;
+            scrollbar-width: none;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        .nav-scroller::-webkit-scrollbar { display: none; }
+
+        .nav-item {
+            white-space: nowrap;
+            padding: 8px 18px;
+            background: var(--nav-bg);
+            border-radius: 20px;
+            text-decoration: none;
+            color: var(--text);
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        .nav-item:active { opacity: 0.7; }
+        .nav-item.active {
+            /*background: var(--primary);*/
+            /*color: var(--white);*/
+            background: var(--accent);
+        }
+
+        .category-title { padding: 20px 15px 10px 0; margin: 0; font-size: 22px; color: var(--text); scroll-margin-top: 80px;}
+        
+        .container { padding: 12px; max-width: 1000px; margin: 0 auto; }
+        .footer { padding: 12px; max-width: 1000px; margin: 0 auto; }
+        .menu-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-bottom: 30px; }
+        @media (min-width: 768px) { .menu-grid { grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 20px; } }
+        
+        .product-card { 
+            background: var(--white); 
+            border-radius: var(--radius); 
+            overflow: hidden; 
+            display: flex; 
+            flex-direction: column; 
+            box-shadow: 0 6px 16px rgba(74, 63, 53, 0.06);
+        }
+        .product-card.no-image .product-img {
+            display: none;
+        }
+        .product-img {
+            width: 100%;
+            object-fit: cover;
+            display: block;
+            aspect-ratio: 4/3;
+        }
+        .product-img[src=""], 
+        .product-img:not([src]) {
+            display: none;
+        }
+        .product-info { padding: 12px; flex-grow: 1; display: flex; flex-direction: column; justify-content: space-between; }
+        .product-title { font-size: 14px; font-weight: 600; margin-bottom: 6px; line-height: 1.2; /* height: 34px; display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    */ } 
+        .product-price { font-weight: 800; color: var(--primary); font-size: 16px;}
+
+        .modal-overlay { 
+            display: none; 
+            position: fixed; 
+            top: 0; left: 0; 
+            width: 100%; height: 100%; 
+            background: rgba(50, 42, 36, 0.65); 
+            z-index: 1000; 
+            justify-content: center; 
+            align-items: flex-end; 
+            backdrop-filter: blur(5px); 
+            -webkit-backdrop-filter: blur(5px);
+        }
+        .modal-content { 
+            background: var(--white); 
+            width: 100%; 
+            max-width: 600px;
+            border-radius: 24px 24px 0 0; 
+            max-height: 85dvh; 
+            overflow-y: auto; 
+            position: relative; 
+            animation: slideUp 0.35s cubic-bezier(0.2, 0.8, 0.2, 1); 
+            box-sizing: border-box; 
+            padding: 24px; 
+            margin: 0 auto;
+        }
+        @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+
+        .modal-body img {
+            aspect-ratio: 4 / 3; 
+            object-fit: cover;
+            height: auto;
+            
+            width: 100%;
+            border-radius: 16px;
+            margin-bottom: 15px;
+            display: block;
+            animation: fadeIn 0.3s ease-in-out;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        /* Стили для модалки без фото */
+        .modal-body:has(h2:first-child) {
+            padding-top: 5px;
+        }
+        
+        .weight-badge { color: #8c7f70; font-size: 14px; margin: 5px 0 12px;}
+        
+        .close-btn { 
+            position: absolute; top: 16px; right: 16px; 
+            background: var(--nav-bg); 
+            width: 38px; height: 38px; 
+            border-radius: 50%; 
+            display: flex; align-items: center; justify-content: center; 
+            cursor: pointer; font-size: 22px; color: var(--text); z-index: 10; 
+        }
+        
+        .modal-btn {
+            width: 100%; 
+            padding: 16px; 
+            margin-top: 20px; 
+            border-radius: 14px; 
+            border: none; 
+            background: var(--nav-bg); 
+            font-size: 16px; 
+            font-weight: 600;
+            color: var(--text);
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <header><img src="assets/logo.svg" class="header-logo"></header>
+    
+    <div class="sticky-header">
+        <div class="main-tabs">
+            <button class="main-tab active" onclick="switchTab('food', this)">Кухня</button>
+            <button class="main-tab" onclick="switchTab('bar', this)">Бар</button>
+        </div>
+        <nav class="nav-scroller" id="nav-scroller">
+            {nav_items}
+        </nav>
+    </div>
+
+    <div class="container">
+        <div id="content-food">{sections_food}</div>
+        <div id="content-bar" style="display: none;">{sections_bar}</div>
+    </div>
+
+    <!-- <footer>
+        <a href="menu.pdf" target="_blank" class="download-btn">Скачать меню в PDF</a>
+    </footer> -->
+    
+    <div id="modal" class="modal-overlay" onclick="closeModal()">
+        <div class="modal-content" onclick="event.stopPropagation()">
+            <div class="close-btn" onclick="closeModal()">×</div>
+            <div id="modal-body" class="modal-body"></div>
+            <button class="modal-btn" onclick="closeModal()">Закрыть</button>
+        </div>
+    </div>
+    
+
+    
+    <script>
+        const menuItems = {items_json};  // Массив, который заполняем
+
+        function switchTab(tabName, clickedBtn) {
+            // Проверяем, нажат ли уже активный таб
+            const isAlreadyActive = clickedBtn.classList.contains('active');
+        
+            if (isAlreadyActive) {
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+                return; // Прерываем выполнение, так как переключать ничего не нужно
+            }
+        
+            // Если это новый таб — выполняем логику переключения
+            document.querySelectorAll('.main-tab').forEach(btn => btn.classList.remove('active'));
+            clickedBtn.classList.add('active');
+        
+            // Показываем нужные ссылки в скроллере и скрываем ненужные
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.style.display = item.getAttribute('data-tab') === tabName ? 'inline-block' : 'none';
+            });
+        
+            // Сбрасываем скролл горизонтального меню в начало
+            document.getElementById('nav-scroller').scrollLeft = 0;
+        
+            // Показываем нужный контент исходя из активного таба
+            document.getElementById('content-food').style.display = tabName === 'food' ? 'block' : 'none';
+            document.getElementById('content-bar').style.display = tabName === 'bar' ? 'block' : 'none';
+        
+            // переход наверх при смене таба
+            window.scrollTo({ top: 0, behavior: 'auto' });
+        
+            // Обновляем расчеты для активной категории
+            setTimeout(() => {
+                updateOffsets();
+                highlightNav();
+            }, 50);
+        }
+        
+        let categoryOffsets = [];
+
+        // Функция для расчета позиций категорий (вызываем при загрузке и ресайзе)
+        function updateOffsets() {
+            const activeContainer = document.querySelector('#content-food[style*="block"], #content-bar[style*="block"]');
+            if(!activeContainer) return;
+            categoryOffsets = Array.from(activeContainer.querySelectorAll('.category-title')).map(el => ({
+                id: el.id, top: el.offsetTop - 120 // отступ для навигации
+            }));
+        }
+
+        // Подсветка активной категории при скролле
+        function highlightNav() {
+            const scrollPosition = window.scrollY;
+            const navItems = document.querySelectorAll('.nav-item');
+            let currentActiveId = '';
+
+            if (scrollPosition < 50) {
+                // Очищаем URL от #, если он там есть
+                if (window.location.hash) {
+                    history.replaceState(null, null, window.location.pathname);
+                }
+                navItems.forEach(item => item.classList.remove('active'));
+                return;
+            }
+
+            // Поиск активной категории через готовый массив
+            for (let i = categoryOffsets.length - 1; i >= 0; i--) {
+                if (scrollPosition >= categoryOffsets[i].top) {
+                    currentActiveId = categoryOffsets[i].id;
+                    break;
+                }
+            }
+
+            // Подсвечиваем только нужный пункт
+            navItems.forEach(item => {
+                const isActive = item.getAttribute('href') === `#${currentActiveId}`;
+                item.classList.toggle('active', isActive);
+            });
+        }
+
+        // Оптимизированный слушатель скролла
+        let ticking = false;
+        window.addEventListener('scroll', () => {
+            if (!ticking) {
+                window.requestAnimationFrame(() => {
+                    highlightNav();
+                    ticking = false;
+                });
+                ticking = true;
+            }
+        });
+
+        // Обработка ресайза (при повороте экрана)
+        window.addEventListener('resize', () => {
+            updateOffsets();
+            const modal = document.getElementById('modal');
+            if (getComputedStyle(modal).display === 'flex') {
+                modal.style.display = 'none';
+                modal.offsetHeight; 
+                modal.style.display = 'flex';
+            }
+        });
+
+        // Инициализация
+        document.addEventListener("DOMContentLoaded", () => {
+            updateOffsets();
+            highlightNav();
+        });
+        function openModal(index) {
+            const item = menuItems[index]; // Массив, который будем наполнять
+            const modalBody = document.getElementById('modal-body');
+        
+            const imgHTML = item.img_full ? `<img src="${item.img_full}">`  : '';
+            const weightHTML = item.weight ? `<div class="weight-badge">${item.weight}</div>` : '';
+            const priceHTML = item.price ? 
+                `<p style="color:var(--primary); font-size:22px; font-weight:800; margin: 10px 0;">${item.price} ₽</p>` : '';
+            const descHTML = (item.desc && item.desc.trim() !== "") ? `
+                <p style="margin: 15px 0; color: var(--text); line-height: 1.4; opacity: 0.9;">
+                    <strong style="color: var(--text); white-space: nowrap;">Состав:</strong>
+                    <span>${item.desc}</span>
+                </p>
+            ` : '';
+            
+            modalBody.innerHTML = `
+                ${imgHTML}
+                <h2 style="margin:0; font-size: 22px;">${item.name}</h2>
+                ${weightHTML}
+                ${priceHTML}
+                ${descHTML}
+            `;
+        
+            document.getElementById('modal').style.display = 'flex';
+            document.body.style.overflow = 'hidden'; // Запрет прокрутки фона
+        }
+
+        function closeModal() {
+            document.getElementById('modal').style.display = 'none';
+            document.body.style.overflow = 'auto';
+        }
+
+
+        async function fetchWithTimeout(url, timeout = 5000) {
+            const controller = new AbortController();
+            const id = setTimeout(() => controller.abort(), timeout);
+            try {
+                const response = await fetch(url, { signal: controller.signal });
+                clearTimeout(id);
+                return response;
+            } catch (e) {
+                clearTimeout(id);
+                return null;  // Тихо возвращаем null в случае обрыва/таймаута, чтобы цикл в prefetch шел дальше
+            }
+        }
+        // Функция фоновой загрузки всех ресурсов
+        async function prefetchMenuAssets() {
+            if (!navigator.onLine) return;
+            
+            const cache = await caches.open('modnyi-v2');
+
+            // Собираем все ссылки на картинки из нашего массива menuItems
+            // Мы берем и основные фото, и миниатюры
+            const urlsToPrefetch = [];
+            // menuItems — это {items_json}, который вставляет build.py        
+            menuItems.forEach(item => {
+                if (item.img_thumb) urlsToPrefetch.push(item.img_thumb);
+                if (item.img_full) urlsToPrefetch.push(item.img_full);
+            });
+
+            console.log(`Проверка кэша для ${urlsToPrefetch.length} ресурсов...`);
+
+            for (const url of urlsToPrefetch) {
+                // Если интернет пропал прямо в процессе цикла — выходим
+                if (!navigator.onLine) break;
+                try {
+                    // Проверяем, нет ли уже этого в кэше, чтобы не качать дважды
+                    const isCached = await cache.match(url);
+                    if (!isCached) {
+                        const response = await fetchWithTimeout(url, 5000);
+                        if (response && response.ok) {
+                            await cache.put(url, response);
+                        }
+                    }
+                } catch (e) {
+                    console.warn('Ошибка загрузки (возможно, прервано соединение):', url);
+                }
+            }
+            console.log('✅ Фоновое обновление кэша завершено');
+        }
+
+        // Функция, которая находит все "сломанные" картинки и пробует загрузить их заново
+        function retryFailedImages() {
+            console.log("Восстановление отображения картинок...");
+            const images = document.querySelectorAll('img.product-img');
+            images.forEach(img => {
+                // Если картинка не прогрузилась (естественный размер 0)
+                if (!img.complete || img.naturalWidth === 0) {
+                    const originalSrc = img.getAttribute('src');
+                    if (originalSrc) {
+                        // Перезаписываем src тем же значением, чтобы SW отдал файл из кэша
+                        img.src = originalSrc;
+                    }
+                }
+            });
+        }
+
+        // Ждем полной загрузки страницы
+        window.addEventListener('load', () => {
+            // Регистрируем Service Worker
+            if ('serviceWorker' in navigator) {
+                navigator.serviceWorker.register('./sw.js')
+                    .then(() => console.log("SW готов"))
+                    .catch(err => console.log("Ошибка SW", err));
+            }
+            // Запускаем фоновую выкачку картинок через 2 секунды
+            // (чтобы не мешать пользователю в первое время)
+            setTimeout(prefetchMenuAssets, 2000);
+        });
+
+        // Обработка возвращения интернета если отключился посредине скачивания в кэш
+        // 1. Докачиваем в кэш
+        // 2. Обновляем битые картинки на экране
+        window.addEventListener('online', async () => {
+            console.log('Сеть восстановлена, докачиваю ресурсы...');
+            // Даем браузеру 1 секунду "продышаться" и запускаем восстановление
+            setTimeout(async () => {
+                await prefetchMenuAssets();
+                refreshImages();
+            }, 1000);
+        });
+
+    </script>
+</body>
+</html>

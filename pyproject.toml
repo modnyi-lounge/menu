@@ -1,0 +1,11 @@
+[project]
+name = "dev-test"
+version = "1.0.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "requests>=2.33.0",
+    "weasyprint>=68.1",
+]
+

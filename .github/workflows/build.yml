@@ -1,0 +1,72 @@
+name: Build and Deploy
+
+on:
+  repository_dispatch: # это триггер который запускаем POST запросом из AppsScript
+    types: [webhook_update]
+  workflow_dispatch: # Позволяет запускать процесс вручную из вкладки Actions
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    # Даем права на запись, чтобы Action мог запушить картинки в репозиторий
+    permissions:
+      contents: write
+      pages: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+        with:
+          # нужно, чтобы иметь полную историю для пуша
+          fetch-depth: 0
+
+      - name: Install system dependencies for WeasyPrint
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libpango-1.0-0 libharfbuzz0b libpangoft2-1.0-0
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+
+      - name: Install dependencies
+        run: pip install requests Pillow weasyprint pillow-heif
+
+      - name: Create asset directories
+        run: |
+          mkdir -p assets/img/full
+          mkdir -p assets/img/thumbs
+
+      - name: Process images (Download & Optimize)
+        run: python process_images.py
+
+      - name: Build HTML
+        run: python build.py
+
+      - name: Build PDF TEXT menu
+        run: python build_pdf.py
+
+      # - name: Build PDF full menu
+      #   run: python build_pdf_full.py
+        
+      - name: Commit and Push optimized images
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          # Добавляем только новые или измененные изображения
+          git add assets/img/
+          # Проверяем, есть ли что коммитить, чтобы билд не падал с ошибкой
+          if git diff --quiet && git diff --staged --quiet; then
+            echo "No changes to images"
+          else
+            git commit -m "Auto-optimize and cache new images [skip ci]"
+            git push origin main
+          fi
+
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./  # Отправит всё содержимое корня (вкл. новые index.html и pdf) в ветку gh-pages
+          publish_branch: gh-pages
