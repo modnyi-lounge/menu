@@ -104,7 +104,7 @@ def build():
     final_html = template.replace('{nav_items}', nav_html)
     final_html = final_html.replace('{sections_food}', sections_food_html)
     final_html = final_html.replace('{sections_bar}', sections_bar_html)
-    final_html = final_html.replace('{items_json}', json.dumps(flat_items_for_js, ensure_ascii=False))
+    final_html = final_html.replace('{ items_json }', json.dumps(flat_items_for_js, ensure_ascii=False))
 
     with open('index.html', 'w', encoding='utf-8') as f:
         f.write(final_html)

@@ -36,13 +36,13 @@ This is a static site generator built with Python (uv). Автоматизиро
 - `sw.js`: Логика Service Worker.
 
 ## Общие правила поведения
-- Think step by step in English, then respond in Russian.
+<!-- - Think step by step in English, then respond in Russian. -->
 - Качественный оффлайн-режим сайта критически важен
 - не правь index.html напрямую (потому что HTML генерируется через build.py из template.html)
 
 ## Правила кода (Python)
-- Используй uv run для запуска скриптов.
 - Type hints, PEP 8, минимальные зависимости, последние лучшие практики
+- Используй uv run для запуска скриптов.
 
 ## Правила фронтенда
 - Современный семантический vanilla HTML
@@ -51,11 +51,11 @@ This is a static site generator built with Python (uv). Автоматизиро
 - чистый код HTML/CSS/JS
 
 ## Workflow (Протокол Деплоя)
-1. **Разработка:** Все правки вносим в локальную папку.
-2. **Тест:** `git push origin main` (отправка в `dev-test`). Проверяем GitHub Pages.
-3. **Прод:** Только после успеха: `git push production main`.
+**Разработка:** Все правки вносим в локальную папку.
+<!-- 2. **Тест:** `git push origin main` (отправка в `dev-test`). Проверяем GitHub Pages.
+3. **Прод:** Только после успеха: `git push production main`. -->
 
-## 🤖 Инструкции для Gemini (Skills & Prompts)
+<!-- ## 🤖 Инструкции для Gemini (Skills & Prompts)
 - **Check Logs:** "Проанализируй последние записи в `log.log` или вывод GitHub Actions. Найди причину ERR_FAILED."
 - **Build Test:** "Запусти `python build.py` локально и проверь, корректно ли сгенерирован JSON в `index.html`."
-- **Image Audit:** "Проверь папку `assets/img/thumbs`, убедись что для каждого ID из таблицы создан файл."
+- **Image Audit:** "Проверь папку `assets/img/thumbs`, убедись что для каждого ID из таблицы создан файл." -->
