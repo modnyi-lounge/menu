@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="ru">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
@@ -368,9 +369,10 @@
         }
     </style>
 </head>
+
 <body>
     <header><img src="assets/logo.svg" class="header-logo"></header>
-    
+
     <div class="sticky-header">
         <div class="main-tabs">
             <button class="main-tab active" onclick="switchTab('food', this)">Кухня</button>
@@ -389,7 +391,7 @@
     <footer>
         <a href="menu_text.pdf" target="_blank" class="download-btn">
             <svg class="download-icon" viewBox="0 0 24 24">
-                <path d="M12 16l-5-5h3V4h4v7h3l-5 5zm-7 2h14v2H5v-2z"/>
+                <path d="M12 16l-5-5h3V4h4v7h3l-5 5zm-7 2h14v2H5v-2z" />
             </svg>
             Скачать меню (PDF)
         </a>
@@ -399,7 +401,7 @@
             При повреждении устройства взимается компенсация — 15 000 ₽
         </p>
     </footer>
-    
+
     <div id="modal" class="modal-overlay" onclick="closeModal()">
         <div class="modal-content" onclick="event.stopPropagation()">
             <div class="close-btn" onclick="closeModal()">×</div>
@@ -407,53 +409,53 @@
             <button class="modal-btn" onclick="closeModal()">Закрыть</button>
         </div>
     </div>
-    
 
-    
+
+
     <script>
-        const menuItems = {items_json};  // Массив, который заполняем
+        const menuItems = { items_json };  // Массив, который заполняем
 
         function switchTab(tabName, clickedBtn) {
             // Проверяем, нажат ли уже активный таб
             const isAlreadyActive = clickedBtn.classList.contains('active');
-        
+
             if (isAlreadyActive) {
                 window.scrollTo({ top: 0, behavior: 'smooth' });
                 return; // Прерываем выполнение, так как переключать ничего не нужно
             }
-        
+
             // Если это новый таб — выполняем логику переключения
             document.querySelectorAll('.main-tab').forEach(btn => btn.classList.remove('active'));
             clickedBtn.classList.add('active');
-        
+
             // Показываем нужные ссылки в скроллере и скрываем ненужные
             document.querySelectorAll('.nav-item').forEach(item => {
                 item.style.display = item.getAttribute('data-tab') === tabName ? 'inline-block' : 'none';
             });
-        
+
             // Сбрасываем скролл горизонтального меню в начало
             document.getElementById('nav-scroller').scrollLeft = 0;
-        
+
             // Показываем нужный контент исходя из активного таба
             document.getElementById('content-food').style.display = tabName === 'food' ? 'block' : 'none';
             document.getElementById('content-bar').style.display = tabName === 'bar' ? 'block' : 'none';
-        
+
             // переход наверх при смене таба
             window.scrollTo({ top: 0, behavior: 'auto' });
-        
+
             // Обновляем расчеты для активной категории
             setTimeout(() => {
                 updateOffsets();
                 highlightNav();
             }, 50);
         }
-        
+
         let categoryOffsets = [];
 
         // Функция для расчета позиций категорий (вызываем при загрузке и ресайзе)
         function updateOffsets() {
             const activeContainer = document.querySelector('#content-food[style*="block"], #content-bar[style*="block"]');
-            if(!activeContainer) return;
+            if (!activeContainer) return;
             categoryOffsets = Array.from(activeContainer.querySelectorAll('.category-title')).map(el => ({
                 id: el.id, top: el.offsetTop - 120 // отступ для навигации
             }));
@@ -507,7 +509,7 @@
             const modal = document.getElementById('modal');
             if (getComputedStyle(modal).display === 'flex') {
                 modal.style.display = 'none';
-                modal.offsetHeight; 
+                modal.offsetHeight;
                 modal.style.display = 'flex';
             }
         });
@@ -520,10 +522,10 @@
         function openModal(index) {
             const item = menuItems[index]; // Массив, который будем наполнять
             const modalBody = document.getElementById('modal-body');
-        
-            const imgHTML = item.img_full ? `<img src="${item.img_full}">`  : '';
+
+            const imgHTML = item.img_full ? `<img src="${item.img_full}">` : '';
             const weightHTML = item.weight ? `<div class="weight-badge">${item.weight}</div>` : '';
-            const priceHTML = item.price ? 
+            const priceHTML = item.price ?
                 `<p style="color:var(--primary); font-size:22px; font-weight:800; margin: 10px 0;">${item.price} ₽</p>` : '';
             const descHTML = (item.desc && item.desc.trim() !== "") ? `
                 <p style="margin: 15px 0; color: var(--text); line-height: 1.4; opacity: 0.9;">
@@ -531,7 +533,7 @@
                     <span>${item.desc}</span>
                 </p>
             ` : '';
-            
+
             modalBody.innerHTML = `
                 ${imgHTML}
                 <h2 style="margin:0; font-size: 22px;">${item.name}</h2>
@@ -539,7 +541,7 @@
                 ${priceHTML}
                 ${descHTML}
             `;
-        
+
             document.getElementById('modal').style.display = 'flex';
             document.body.style.overflow = 'hidden'; // Запрет прокрутки фона
         }
@@ -565,7 +567,7 @@
         // Функция фоновой загрузки всех ресурсов
         async function prefetchMenuAssets() {
             if (!navigator.onLine) return;
-            
+
             const cache = await caches.open('modnyi-v2');
 
             // Собираем все ссылки на картинки из нашего массива menuItems
@@ -641,4 +643,5 @@
 
     </script>
 </body>
+
 </html>
