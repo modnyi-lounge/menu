@@ -573,7 +573,7 @@
             // Собираем все ссылки на картинки из нашего массива menuItems
             // Мы берем и основные фото, и миниатюры
             const urlsToPrefetch = [];
-            // menuItems — это {items_json}, который вставляет build.py        
+            // menuItems — это { items_json }, который вставляет build.py        
             menuItems.forEach(item => {
                 if (item.img_thumb) urlsToPrefetch.push(item.img_thumb);
                 if (item.img_full) urlsToPrefetch.push(item.img_full);

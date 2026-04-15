@@ -66,7 +66,7 @@ def build():
                 item['img_thumb'] = t_path
                 item['img_full'] = f_path
 
-                img_tag = f'<img src="{t_path}" class="product-img" loading="lazy" alt="{item["name"]}">'
+                img_tag = f'<img src="{t_path}" class="product-img" loading="lazy">'
                 card_class = "product-card"
             else:
                 item['img_thumb'] = None
