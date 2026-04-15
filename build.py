@@ -18,7 +18,9 @@ def build():
     try:
         response = requests.get(SHEET_CSV_URL, timeout=30)
         response.encoding = 'utf-8'
+        # Используем первый ряд (хедер), очищая каждое название от пробелов и невидимых символов BOM (Byte Order Mark)
         reader = csv.DictReader(response.text.splitlines())
+        reader.fieldnames = [field.strip().replace('\ufeff', '') for field in reader.fieldnames]
         items = list(reader)
     except Exception as e:
         print(f"Ошибка при загрузке таблицы: {e}")
@@ -27,6 +29,8 @@ def build():
     # Группируем по категориям
     categories = {}
     for item in items:
+        if not item.get('name'): # если имени нет (вероятно пустая строка в конце списка), пропускаем строку
+            continue
         cat = item.get('category', 'Разное')
         if cat not in categories:
             categories[cat] = []
