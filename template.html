@@ -568,7 +568,7 @@
         async function prefetchMenuAssets() {
             if (!navigator.onLine) return;
 
-            const cache = await caches.open('modnyi-v2');
+            const cache = await caches.open('modnyi-v3');
 
             // Собираем все ссылки на картинки из нашего массива menuItems
             // Мы берем и основные фото, и миниатюры
