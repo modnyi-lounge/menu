@@ -588,7 +588,7 @@
                     // Проверяем, нет ли уже этого в кэше, чтобы не качать дважды
                     const isCached = await cache.match(url);
                     if (!isCached) {
-                        const response = await fetchWithTimeout(url, 5000);
+                        const response = await fetchWithTimeout(url, 15000);
                         if (response && response.ok) {
                             await cache.put(url, response);
                         }
@@ -637,7 +637,7 @@
             // Даем браузеру 1 секунду "продышаться" и запускаем восстановление
             setTimeout(async () => {
                 await prefetchMenuAssets();
-                refreshImages();
+                retryFailedImages();
             }, 1000);
         });
 
