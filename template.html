@@ -610,6 +610,7 @@
                     const originalSrc = img.getAttribute('src');
                     if (originalSrc) {
                         // Перезаписываем src тем же значением, чтобы SW отдал файл из кэша
+                        img.removeAttribute('src');
                         img.src = originalSrc;
                     }
                 }
@@ -626,7 +627,10 @@
             }
             // Запускаем фоновую выкачку картинок через 2 секунды
             // (чтобы не мешать пользователю в первое время)
-            setTimeout(prefetchMenuAssets, 2000);
+            setTimeout(async () => {
+                await prefetchMenuAssets();
+                retryFailedImages();
+            }, 2000);
         });
 
         // Обработка возвращения интернета если отключился посредине скачивания в кэш
