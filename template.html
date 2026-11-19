@@ -637,7 +637,7 @@
             // Даем браузеру 1 секунду "продышаться" и запускаем восстановление
             setTimeout(async () => {
                 await prefetchMenuAssets();
-                refreshImages();
+                retryFailedImages();
             }, 1000);
         });
 
