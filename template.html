@@ -38,9 +38,12 @@
 
         header {
             background: var(--bg);
-            padding: 15px;
-            /* padding-bottom: 5px; */
+            /* padding: 15px;
+            padding-bottom: 0px; */
+            padding-top: calc(15px + env(safe-area-inset-top, 0px));
+            padding-right: 15px;
             padding-bottom: 0px;
+            padding-left: 15px;
             text-align: center;
             font-weight: 800;
             font-size: 18px;
